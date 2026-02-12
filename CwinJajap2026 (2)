@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine 💘</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Screenshot -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 400% 400%;
+      animation: bgMove 12s ease infinite;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+      padding: 18px;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Card */
+    .card {
+      width: min(92%, 500px);
+      padding: 40px 30px 34px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(18px);
+      border-radius: 28px;
+      text-align: center;
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.25),
+        inset 0 0 0 1px rgba(255,255,255,0.4);
+      position: relative;
+      animation: cardIn 1.1s ease;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Glow ring */
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 30px;
+      background: linear-gradient(120deg, #ff4d6d, #ff9a9e, #fbc2eb);
+      z-index: -1;
+      filter: blur(20px);
+      opacity: 0.7;
+    }
+
+    .emoji {
+      font-size: 68px;
+      margin-bottom: 12px;
+      animation: heartbeat 1.8s infinite;
+    }
+
+    @keyframes heartbeat {
+      0%,100% { transform: scale(1); }
+      25% { transform: scale(1.08); }
+      50% { transform: scale(1); }
+      75% { transform: scale(1.12); }
+    }
+
+    h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 28px;
+      color: #4a1c2f;
+      margin-bottom: 22px;
+      line-height: 1.35;
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #6b6b6b;
+      font-style: italic;
+    }
+
+    /* Buttons area (invite) */
+    .buttons {
+      position: relative;
+      height: 78px;
+      margin-top: 10px;
+    }
+
+    button {
+      position: absolute;
+      padding: 14px 36px;
+      border-radius: 40px;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      user-select: none;
+    }
+
+    button:active { transform: scale(0.94); }
+
+    #yes {
+      left: 12%;
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+      box-shadow: 0 15px 35px rgba(255,77,109,0.55);
+    }
+    #yes:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(255,77,109,0.7); }
+
+    #no {
+      left: 55%;
+      background: rgba(255,255,255,0.9);
+      color: #777;
+    }
+
+    /* Screens */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .sub {
+      font-size: 14px;
+      color: #6b6b6b;
+      margin: -6px 0 18px;
+    }
+
+    .qtitle{
+      font-family: "Playfair Display", serif;
+      font-size: 22px;
+      color: #4a1c2f;
+      margin: 8px 0 10px;
+      line-height: 1.35;
+    }
+
+    .field {
+      text-align: left;
+      margin: 14px 0;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 18px;
+      padding: 14px 14px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #5c3b49;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="date"], input[type="time"], input[type="text"]{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.9);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      user-select: none;
+    }
+    .chip:hover { transform: translateY(-2px); }
+    .chip input { accent-color: #ff4d6d; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      position: static;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #ff4d6d, #ff758f);
+      color: #fff;
+      box-shadow: 0 15px 35px rgba(255,77,109,0.45);
+    }
+
+    .btn.ghost {
+      background: rgba(255,255,255,0.9);
+      color: #6b6b6b;
+    }
+
+    .progress {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 8px 0 14px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.15);
+    }
+    .dot.on { background: rgba(255,77,109,0.8); }
+
+    .summary {
+      text-align: left;
+      margin-top: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .summary p {
+      font-size: 14px;
+      color: #4a1c2f;
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+    .summary b { color: #3a0f21; }
+
+    /* Cute downloadable card */
+    #cardCapture{
+      margin-top:16px;
+      padding:20px;
+      border-radius:22px;
+      background: linear-gradient(135deg, #ff9a9e, #fbc2eb);
+      color:#fff;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      display:none;
+    }
+    #cardCapture h3{
+      margin-bottom:12px;
+      font-family:"Playfair Display", serif;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+    }
+    #cardContent{
+      font-family:"Poppins", sans-serif;
+      font-size:14px;
+      line-height:1.6;
+    }
+    #cardCapture .tag{
+      margin-top:12px;
+      font-size:12px;
+      opacity:0.9;
+      font-family:"Poppins", sans-serif;
+    }
+
+    /* Countdown */
+    .countdownWrap{
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.6);
+      text-align: center;
+      display:none;
+    }
+    .countdownTitle{
+      font-family:"Playfair Display", serif;
+      color:#4a1c2f;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .countdownNums{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 6px;
+    }
+    .pill{
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.85);
+      border: 1px solid rgba(0,0,0,0.06);
+      color:#4a1c2f;
+      font-size: 13px;
+      min-width: 98px;
+      text-align:center;
+    }
+
+    /* Wheel modal */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      padding: 18px;
+    }
+    .modalOverlay.show{ display:flex; }
+
+    .modal{
+      width: min(92vw, 420px);
+      background: rgba(255,255,255,0.78);
+      border-radius: 26px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.4);
+      position: relative;
+      padding: 18px 18px 16px;
+    }
+    .modal::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      border-radius: 28px;
+      background: linear-gradient(120deg, #ff4d6d, #ff9a9e, #fbc2eb);
+      z-index:-1;
+      filter: blur(18px);
+      opacity:0.7;
+    }
+    .modalTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .modalTitle{
+      font-family:"Playfair Display", serif;
+      color:#4a1c2f;
+      font-size: 18px;
+    }
+    .xBtn{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.9);
+      color:#6b6b6b;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+      font-weight: 600;
+    }
+    .wheelWrap{
+      position: relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin: 8px 0 10px;
+    }
+    canvas#wheel{
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.35), 0 18px 50px rgba(0,0,0,0.18);
+    }
+    .pointer{
+      position:absolute;
+      top: -6px;
+      width: 0;
+      height: 0;
+      border-left: 14px solid transparent;
+      border-right: 14px solid transparent;
+      border-bottom: 24px solid rgba(255,77,109,0.9);
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,0.2));
+    }
+    .wheelHint{
+      text-align:center;
+      font-size: 13px;
+      color:#6b6b6b;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    /* Floating hearts */
+    .heart {
+      position: absolute;
+      bottom: -20px;
+      animation: floatUp linear forwards;
+      pointer-events: none;
+      filter: blur(0.3px);
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to   { transform: translateY(-120vh) scale(1.8); opacity: 0; }
+    }
+
+    @media (max-width: 480px) {
+      h2 { font-size: 23px; }
+      .emoji { font-size: 58px; }
+      button { padding: 12px 28px; font-size: 15px; }
+      #yes { left: 8%; }
+      #no { left: 55%; }
+      .choices { grid-template-columns: 1fr; }
+      .card { padding: 34px 22px 28px; }
+      canvas#wheel{ width: 280px; height: 280px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <!-- Screen 1: Invite -->
+    <div id="screenInvite" class="screen active">
+      <div class="emoji">🐉🐲</div>
+      <h2>Julius,<br>will you be my Valentine?</h2>
+
+      <div class="buttons">
+        <button id="yes">Yes🤍</button>
+        <button id="no">No😛</button>
+      </div>
+
+      <div class="hint">Nope, I don't accept a “no” sayang 🥰</div>
+    </div>
+
+    <!-- Screen 2: Quiz Step 1 (When) -->
+    <div id="screenQuiz1" class="screen">
+      <div class="emoji">💌</div>
+      <div class="qtitle">Mini quiz time 😛🤍</div>
+      <div class="sub">Issit Saturday 14th or Sunday 15th? Jangan ganggu ur kerjaan ya ☹️</div>
+
+      <div class="progress">
+        <div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+
+      <div class="field">
+        <label for="datePick">Pick a date 📅</label>
+        <input id="datePick" type="date" />
+      </div>
+
+      <div class="field">
+        <label for="timePick">Pick a time ⏰</label>
+        <input id="timePick" type="time" />
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="back1">Back</button>
+        <button class="btn primary" id="next1">Next 💗</button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Quiz Step 2 (Food) -->
+    <div id="screenQuiz2" class="screen">
+      <div class="emoji">🍽️</div>
+      <div class="qtitle">Okay chef… what are we eating?</div>
+      <div class="sub">Pick all the foods you want (multiple allowed).</div>
+
+      <div class="progress">
+        <div class="dot on"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+
+      <div class="field">
+        <label>Food options ☃️</label>
+        <div class="choices">
+          <label class="chip"><input type="checkbox" value="Steak 🥩" class="foodOpt"> Steak 🥩</label>
+          <label class="chip"><input type="checkbox" value="Nyunda 🍚" class="foodOpt"> Nyunda 🍚</label>
+          <label class="chip"><input type="checkbox" value="Pasta 🍝" class="foodOpt"> Pasta 🍝</label>
+          <label class="chip"><input type="checkbox" value="Sushi 🍣" class="foodOpt"> Sushi 🍣</label>
+          <label class="chip"><input type="checkbox" value="Burger 🍔" class="foodOpt"> Burger 🍔</label>
+          <label class="chip"><input type="checkbox" value="Tiramisyuuuu 🍰" class="foodOpt"> Tiramisyuuuu 🍰</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="otherFood">Anything else Jajap is craving? 😋</label>
+        <input id="otherFood" type="text" placeholder="e.g., ramen, tacos, hotpot..." />
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="back2">Back</button>
+        <button class="btn primary" id="next2">Next 💘</button>
+      </div>
+    </div>
+
+    <!-- Screen 4: Movie Choice -->
+    <div id="screenQuizMovie" class="screen">
+      <div class="emoji">🎬</div>
+      <div class="qtitle">What are we watching?</div>
+      <div class="sub">Pick a genre… or let fate decide 🎡</div>
+
+      <div class="progress">
+        <div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div>
+      </div>
+
+      <div class="field">
+        <label>Pick one genre 🎞️</label>
+        <div class="choices">
+          <label class="chip"><input type="radio" name="movie" value="Romcom 💞"> Romcom 💞</label>
+          <label class="chip"><input type="radio" name="movie" value="Thriller/Mystery 🕵️"> Thriller/Mystery 🕵️</label>
+          <label class="chip"><input type="radio" name="movie" value="Horror 👻"> Horror 👻</label>
+          <label class="chip"><input type="radio" name="movie" value="Documentary 🎥"> Documentary 🎥</label>
+          <label class="chip"><input type="radio" name="movie" value="Action 💥"> Action 💥</label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="backMovie">Back</button>
+        <button class="btn ghost" id="openWheel">Spin Wheel 🎡</button>
+        <button class="btn primary" id="nextMovie">Next ✨</button>
+      </div>
+    </div>
+
+    <!-- Screen 5: Summary -->
+    <div id="screenQuiz3" class="screen">
+      <div class="emoji">✨</div>
+      <div class="qtitle">Perfectttt virtual Valentine's Day</div>
+      <div class="sub">Click Confirm to lock ittt!!</div>
+
+      <div class="progress">
+        <div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div>
+      </div>
+
+      <div class="summary" id="summaryBox"></div>
+
+      <!-- Countdown -->
+      <div class="countdownWrap" id="countdownWrap">
+        <div class="countdownTitle">⏳ Countdown until our date</div>
+        <div class="countdownNums">
+          <div class="pill" id="cdDays">0 days</div>
+          <div class="pill" id="cdHours">0 hours</div>
+          <div class="pill" id="cdMins">0 mins</div>
+          <div class="pill" id="cdSecs">0 secs</div>
+        </div>
+      </div>
+
+      <!-- Cute downloadable card -->
+      <div id="cardCapture">
+        <h3>💘 Our Virtual Valentine's Day Plan</h3>
+        <div id="cardContent"></div>
+        <div class="tag">Now you're stuck with Cwinn</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" id="back3">Back</button>
+        <button class="btn ghost" id="saveCard">Save Card 📸</button>
+        <button class="btn ghost" id="sendWhatsApp">Send WhatsApp 📱</button>
+        <button class="btn primary" id="confirm">Confirm 💍</button>
+      </div>
+
+      <div class="hint" id="finalHint" style="display:none;">Locked in. Now you owe me a kiss the time we finally get to meet in person🥹💖</div>
+    </div>
+  </div>
+
+  <!-- Wheel Modal -->
+  <div class="modalOverlay" id="wheelOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">🎡 Spin the movie wheel</div>
+        <button class="xBtn" id="closeWheel" aria-label="Close">×</button>
+      </div>
+      <div class="wheelWrap">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="640" height="640"></canvas>
+      </div>
+      <div class="wheelHint">Tap “Spin” and let fate choose 😌✨</div>
+      <div class="actions" style="margin-top: 8px;">
+        <button class="btn ghost" id="spinBtn">Spin 🎡</button>
+        <button class="btn primary" id="usePickBtn" disabled>Use this pick 💘</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sounds -->
+  <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-cartoon-voice-laugh-343.mp3"></audio>
+  <audio id="yesSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+  <script>
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const card = document.querySelector(".card");
+    const hoverSound = document.getElementById("hoverSound");
+    const yesSound = document.getElementById("yesSound");
+
+    // Screens
+    const screenInvite = document.getElementById("screenInvite");
+    const screenQuiz1  = document.getElementById("screenQuiz1");
+    const screenQuiz2  = document.getElementById("screenQuiz2");
+    const screenQuizMovie = document.getElementById("screenQuizMovie");
+    const screenQuiz3  = document.getElementById("screenQuiz3");
+
+    function showScreen(el) {
+      [screenInvite, screenQuiz1, screenQuiz2, screenQuizMovie, screenQuiz3].forEach(s => s.classList.remove("active"));
+      el.classList.add("active");
+    }
+
+    // No button dodges cursor
+    noBtn.addEventListener("mouseenter", () => {
+      hoverSound.currentTime = 0;
+      hoverSound.play();
+
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      const maxX = cardRect.width - btnRect.width - 10;
+      const maxY = cardRect.height - btnRect.height - 10;
+
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top  = Math.random() * maxY + "px";
+    });
+
+    // YES -> confetti + go to quiz (NO "yay" alert)
+    yesBtn.addEventListener("click", () => {
+      yesSound.currentTime = 0;
+      yesSound.play();
+
+      confetti({ particleCount: 220, spread: 120, origin: { y: 0.65 } });
+      setTimeout(() => showScreen(screenQuiz1), 450);
+    });
+
+    // Quiz state
+    const datePick = document.getElementById("datePick");
+    const timePick = document.getElementById("timePick");
+    const otherFood = document.getElementById("otherFood");
+
+    const summaryBox = document.getElementById("summaryBox");
+    const finalHint = document.getElementById("finalHint");
+
+    const cardBox = document.getElementById("cardCapture");
+    const cardContent = document.getElementById("cardContent");
+
+    // Countdown elements
+    const countdownWrap = document.getElementById("countdownWrap");
+    const cdDays = document.getElementById("cdDays");
+    const cdHours = document.getElementById("cdHours");
+    const cdMins = document.getElementById("cdMins");
+    const cdSecs = document.getElementById("cdSecs");
+    let countdownTimer = null;
+
+    function getFoods() {
+      const foods = Array.from(document.querySelectorAll(".foodOpt:checked")).map(x => x.value);
+      const extra = otherFood.value.trim();
+      if (extra) foods.push(extra);
+      return foods;
+    }
+
+    function getMovie() {
+      const pick = document.querySelector('input[name="movie"]:checked');
+      return pick ? pick.value : null;
+    }
+
+    function setMovieByValue(val) {
+      const inputs = Array.from(document.querySelectorAll('input[name="movie"]'));
+      const target = inputs.find(i => i.value === val);
+      if (target) target.checked = true;
+    }
+
+    function formatDate(d) {
+      if (!d) return "";
+      const [y, m, day] = d.split("-").map(Number);
+      const dateObj = new Date(y, m - 1, day);
+      return dateObj.toLocaleDateString(undefined, {
+        weekday: "long", year: "numeric", month: "long", day: "numeric"
+      });
+    }
+
+    function getDateTimeObj() {
+      if (!datePick.value || !timePick.value) return null;
+      // datePick: YYYY-MM-DD, timePick: HH:MM
+      const [y, m, d] = datePick.value.split("-").map(Number);
+      const [hh, mm] = timePick.value.split(":").map(Number);
+      return new Date(y, m - 1, d, hh, mm, 0, 0);
+    }
+
+    function buildSummaryHTML() {
+      const foods = getFoods();
+      const movie = getMovie();
+      const dateTxt = formatDate(datePick.value);
+      const timeTxt = timePick.value;
+
+      return `
+        <p><b>When:</b> ${dateTxt} at ${timeTxt} ⏰</p>
+        <p><b>Food:</b> ${foods.join(", ")} 🍽️</p>
+        <p><b>Movie:</b> ${movie} 🎬</p>
+        <p><b>Status:</b> Jajap is Celine's Vals date</p>
+      `;
+    }
+
+    function buildCardHTML() {
+      const foods = getFoods();
+      const movie = getMovie();
+      const dateTxt = formatDate(datePick.value);
+      const timeTxt = timePick.value;
+
+      return `
+        <div><b>📅 Date:</b> ${dateTxt}</div>
+        <div><b>⏰ Time:</b> ${timeTxt}</div>
+        <div><b>🍽 Food:</b> ${foods.join(", ")}</div>
+        <div><b>🎬 Movie:</b> ${movie}</div>
+      `;
+    }
+
+    function buildWhatsAppText() {
+      const foods = getFoods();
+      const movie = getMovie();
+      const dateTxt = formatDate(datePick.value);
+      const timeTxt = timePick.value;
+
+      return `💘 Our Valentine Plan 💘
+📅 Date: ${dateTxt}
+⏰ Time: ${timeTxt}
+🍽 Food: ${foods.join(", ")}
+🎬 Movie: ${movie}
+Status: Officially ours 😌✨`;
+    }
+
+    // Countdown
+    function startCountdown() {
+      const target = getDateTimeObj();
+      if (!target) return;
+
+      countdownWrap.style.display = "block";
+
+      if (countdownTimer) clearInterval(countdownTimer);
+
+      function tick() {
+        const now = new Date();
+        const diff = target - now;
+
+        if (diff <= 0) {
+          cdDays.textContent = "0 days";
+          cdHours.textContent = "0 hours";
+          cdMins.textContent = "0 mins";
+          cdSecs.textContent = "0 secs";
+          countdownWrap.querySelector(".countdownTitle").textContent = "⏳ It’s date timeeee 💘";
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          confetti({ particleCount: 120, spread: 90, origin: { y: 0.7 } });
+          return;
+        }
+
+        const totalSecs = Math.floor(diff / 1000);
+        const days = Math.floor(totalSecs / 86400);
+        const hours = Math.floor((totalSecs % 86400) / 3600);
+        const mins = Math.floor((totalSecs % 3600) / 60);
+        const secs = totalSecs % 60;
+
+        cdDays.textContent  = `${days} day${days === 1 ? "" : "s"}`;
+        cdHours.textContent = `${hours} hour${hours === 1 ? "" : "s"}`;
+        cdMins.textContent  = `${mins} min${mins === 1 ? "" : "s"}`;
+        cdSecs.textContent  = `${secs} sec${secs === 1 ? "" : "s"}`;
+      }
+
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    // Back buttons
+    document.getElementById("back1").addEventListener("click", () => showScreen(screenInvite));
+    document.getElementById("back2").addEventListener("click", () => showScreen(screenQuiz1));
+    document.getElementById("backMovie").addEventListener("click", () => showScreen(screenQuiz2));
+    document.getElementById("back3").addEventListener("click", () => {
+      countdownWrap.style.display = "none";
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      showScreen(screenQuizMovie);
+    });
+
+    // Next: step 1 -> step 2
+    document.getElementById("next1").addEventListener("click", () => {
+      if (!datePick.value || !timePick.value) {
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+        alert("Naughty Jajap, pick a date AND time 😡");
+        return;
+      }
+      showScreen(screenQuiz2);
+    });
+
+    // Next: step 2 -> movie
+    document.getElementById("next2").addEventListener("click", () => {
+      const foods = getFoods();
+      if (foods.length === 0) {
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+        alert("Jajap pick at least one 😡🥹");
+        return;
+      }
+      showScreen(screenQuizMovie);
+    });
+
+    // Next: movie -> summary
+    document.getElementById("nextMovie").addEventListener("click", () => {
+      const movie = getMovie();
+      if (!movie) {
+        confetti({ particleCount: 40, spread: 60, origin: { y: 0.8 } });
+        alert("Ayuu pilih Jajap!! (or spin the wheel 🎡)");
+        return;
+      }
+
+      summaryBox.innerHTML = buildSummaryHTML();
+      finalHint.style.display = "none";
+      countdownWrap.style.display = "none";
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      showScreen(screenQuiz3);
+    });
+
+    // Confirm -> confetti + show countdown
+    document.getElementById("confirm").addEventListener("click", () => {
+      confetti({ particleCount: 260, spread: 140, origin: { y: 0.62 } });
+      finalHint.style.display = "block";
+
+      // Ensure summary is fresh and start countdown
+      summaryBox.innerHTML = buildSummaryHTML();
+      startCountdown();
+    });
+
+    // Save results as cute screenshot card 📸 + start countdown after saving
+    document.getElementById("saveCard").addEventListener("click", async () => {
+      summaryBox.innerHTML = buildSummaryHTML();
+
+      // Fill and show card box for capture
+      cardContent.innerHTML = buildCardHTML();
+      cardBox.style.display = "block";
+
+      const canvas = await html2canvas(cardBox, { scale: 2 });
+      const link = document.createElement("a");
+      link.download = "our-valentine-plan.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+
+      cardBox.style.display = "none";
+      confetti({ particleCount: 120, spread: 90, origin: { y: 0.7 } });
+
+      // After saving, show countdown too
+      startCountdown();
+    });
+
+    // Send via WhatsApp 📱
+    document.getElementById("sendWhatsApp").addEventListener("click", () => {
+      // keep summary current
+      summaryBox.innerHTML = buildSummaryHTML();
+
+      const text = buildWhatsAppText();
+      const url = "https://wa.me/?text=" + encodeURIComponent(text);
+      window.open(url, "_blank", "noopener,noreferrer");
+
+      // Show countdown when they send too (cute)
+      startCountdown();
+      confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+    });
+
+    // Floating hearts
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.innerHTML = Math.random() > 0.5 ? "❤️" : "💗";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (Math.random() * 22 + 14) + "px";
+      heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+      heart.style.opacity = (Math.random() * 0.5 + 0.4);
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }
+    setInterval(createHeart, 380);
+
+    /* ---------------------------
+       🎡 Spinning Wheel Picker
+    ----------------------------*/
+    const wheelOverlay = document.getElementById("wheelOverlay");
+    const openWheelBtn = document.getElementById("openWheel");
+    const closeWheelBtn = document.getElementById("closeWheel");
+    const spinBtn = document.getElementById("spinBtn");
+    const usePickBtn = document.getElementById("usePickBtn");
+
+    const wheelCanvas = document.getElementById("wheel");
+    const ctx = wheelCanvas.getContext("2d");
+
+    const wheelOptions = [
+      { label: "Romcom 💞", value: "Romcom 💞" },
+      { label: "Thriller/Mystery 🕵️", value: "Thriller/Mystery 🕵️" },
+      { label: "Horror 👻", value: "Horror 👻" },
+      { label: "Documentary 🎥", value: "Documentary 🎥" },
+      { label: "Action 💥", value: "Action 💥" },
+    ];
+
+    let angle = 0;           // radians
+    let angVel = 0;          // radians per frame
+    let spinning = false;
+    let picked = null;
+
+    // Soft palette (no hard neon)
+    const sliceFills = [
+      "rgba(255, 77, 109, 0.72)",
+      "rgba(255, 154, 158, 0.72)",
+      "rgba(251, 194, 235, 0.72)",
+      "rgba(161, 140, 209, 0.72)",
+      "rgba(250, 208, 196, 0.72)",
+    ];
+
+    function drawWheel() {
+      const W = wheelCanvas.width;
+      const H = wheelCanvas.height;
+      const r = Math.min(W, H) * 0.42;
+      const cx = W / 2;
+      const cy = H / 2;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // outer soft ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, r + 22, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.fill();
+      ctx.closePath();
+
+      const n = wheelOptions.length;
+      const slice = (Math.PI * 2) / n;
+
+      for (let i = 0; i < n; i++) {
+        const a0 = angle + i * slice;
+        const a1 = a0 + slice;
+
+        // slice
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, a0, a1);
+        ctx.closePath();
+        ctx.fillStyle = sliceFills[i % sliceFills.length];
+        ctx.fill();
+
+        // separator
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, a0, a0);
+        ctx.strokeStyle = "rgba(255,255,255,0.65)";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // text
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(a0 + slice / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.font = "700 28px Poppins";
+        ctx.shadowColor = "rgba(0,0,0,0.18)";
+        ctx.shadowBlur = 10;
+        ctx.fillText(wheelOptions[i].label, r - 18, 10);
+        ctx.restore();
+      }
+
+      // center cap
+      ctx.beginPath();
+      ctx.arc(cx, cy, 58, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,0.85)";
+      ctx.fill();
+      ctx.closePath();
+
+      ctx.font = "700 24px Playfair Display";
+      ctx.fillStyle = "rgba(74, 28, 47, 0.95)";
+      ctx.textAlign = "center";
+      ctx.fillText("SPIN", cx, cy + 10);
+    }
+
+    function getPickedOption() {
+      // Pointer is at top (12 o’clock). Convert current angle to index.
+      const n = wheelOptions.length;
+      const slice = (Math.PI * 2) / n;
+
+      // We consider the wheel rotated by `angle`, pointer at -90 degrees (top).
+      // Normalize so that 0 points to top.
+      let a = (-Math.PI / 2 - angle) % (Math.PI * 2);
+      if (a < 0) a += Math.PI * 2;
+
+      const idx = Math.floor(a / slice) % n;
+      return wheelOptions[idx];
+    }
+
+    function animate() {
+      if (spinning) {
+        angle += angVel;
+        angVel *= 0.985; // friction
+
+        if (angVel < 0.002) {
+          spinning = false;
+          angVel = 0;
+
+          picked = getPickedOption();
+          usePickBtn.disabled = false;
+
+          confetti({ particleCount: 120, spread: 90, origin: { y: 0.35 } });
+        }
+      }
+
+      drawWheel();
+      requestAnimationFrame(animate);
+    }
+
+    openWheelBtn.addEventListener("click", () => {
+      wheelOverlay.classList.add("show");
+      wheelOverlay.setAttribute("aria-hidden", "false");
+      usePickBtn.disabled = true;
+      picked = null;
+
+      // start with a little “alive” feel
+      drawWheel();
+    });
+
+    function closeWheel() {
+      wheelOverlay.classList.remove("show");
+      wheelOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    closeWheelBtn.addEventListener("click", closeWheel);
+
+    // Close on overlay click (but not modal)
+    wheelOverlay.addEventListener("click", (e) => {
+      if (e.target === wheelOverlay) closeWheel();
+    });
+
+    spinBtn.addEventListener("click", () => {
+      if (spinning) return;
+      spinning = true;
+      usePickBtn.disabled = true;
+      picked = null;
+
+      // random push
+      const base = 0.28 + Math.random() * 0.12;
+      angVel = base + Math.random() * 0.18;
+
+      confetti({ particleCount: 50, spread: 70, origin: { y: 0.35 } });
+    });
+
+    usePickBtn.addEventListener("click", () => {
+      if (!picked) return;
+      setMovieByValue(picked.value);
+      closeWheel();
+      confetti({ particleCount: 80, spread: 80, origin: { y: 0.7 } });
+    });
+
+    // Kick off wheel animation loop
+    drawWheel();
+    requestAnimationFrame(animate);
+  </script>
+
+</body>
+</html>
